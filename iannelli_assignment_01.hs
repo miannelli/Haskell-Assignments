@@ -1,3 +1,7 @@
+-- Michael Iannelli
+-- CSC71010
+-- Homework Assignment #01
+
 -- Problem 0. (trivial) Implement the gcd function recursively.
 -- Using Euclid's Algorithm
 gcd' :: Int -> Int -> Int
@@ -8,7 +12,7 @@ gcd' x y = gcd' y (mod x y)
 -- Problem 1. (trivial) Write two simple implementations of the builtin length function:
 -- a. using recursion (and pattern matching)
 len1 :: [a] -> Int
-len1 [] = 0
+len1 [] 	= 0
 len1 (x:xs) = 1 + len1(xs)
 -- b. using list comprehension and sum
 len2 :: [a] -> Int
@@ -19,16 +23,17 @@ len2 x = sum [ 1 | _ <- x ]
 -- each element of a list. It takes a predicate p (a one-argument function 
 -- returning a boolean) and a list l, and returns a Bool:
 forall :: (a -> Bool) -> [a] -> Bool
-forall p [] = True
+forall p [] 	= error "List can not be empty"
+forall p [x] 	= p x
 forall p (l:ls) = (p l) && (forall p ls)
 
 
 -- Problem 3. (easy) Write a function app that is equivalent to the built-in list 
 -- concatenation function ++. 
 concatenate :: [a] -> [a] -> [a]
-concatenate x [] = x
-concatenate [] x = x
-concatenate (x:xs) ys = x : (concatenate xs ys)
+concatenate x [] 		= x
+concatenate [] x 		= x
+concatenate (x:xs) ys 	= x : (concatenate xs ys)
 -- a. make sure your implementation runs in linear-time
 -- Prepending an element into a list is O(1) time, and concatenate
 -- prepends a number of times equal to (x:xs) :. it is linear time
@@ -47,8 +52,8 @@ concatenate (x:xs) ys = x : (concatenate xs ys)
 -- Problem 4. (easy) An interleaving of two lists contains all elements from both lists, 
 -- with the constraint that any two items from the same list are still in the same order.
 interleave :: [a] -> [a] -> [[a]]
-interleave xs [] = [xs]
-interleave [] xs = [xs]
+interleave xs [] 		 = 	[xs]
+interleave [] xs 		 = 	[xs]
 interleave (x:xs) (y:ys) = 	[x:s | s <- (interleave xs (y:ys))] ++ 
 							[y:s | s <- (interleave (x:xs) ys)]
 
@@ -62,6 +67,7 @@ permutations' xs = [ y:zs | (y,ys) <- pick xs, zs <- permutations' ys]
 
 
 -- Problem 6. (easy-medium) Implement mergesort.
+merge :: [Int] -> [Int] -> [Int]
 merge xs [] = xs
 merge [] xs = xs
 merge (x:xs) (y:ys) = if x <= y
@@ -69,20 +75,24 @@ merge (x:xs) (y:ys) = if x <= y
 					else [y] ++ merge (x:xs) ys
 
 mergesort :: [Int] -> [Int]
-mergesort [] = []
-mergesort xs = merge (mergesort (take n xs)) (mergesort (drop n xs))
+mergesort [] 	= []
+mergesort [x] 	= [x]
+mergesort xs 	= merge (mergesort (take n xs)) (mergesort (drop n xs))
   where
-  	l  = (length xs)
-  	n  = (div l 2)
+  	n  = (div (length xs) 2)
 
--- What is the (average case and worst case) complexity of your code? 
+-- What is the (average case and worst case) complexity of your code?
+-- Both the worst case run time and the average is n*lg(n)
+-- Mergesort divides the list in half until the individual pieces have
+-- one or no elements.  This means it must make lg(n) divisions.  In each
+-- of those divisions it must iterate through 2^n lists consisting of 
+-- n/(2^n elements). (sum from 1 to lg(n) of (2^n)*n/(2^n))
 
 
 -- Problem 7. (easy) Implement quickselect: return the kth smallest element of a list.
 -- (see CLRS, Section 9.2, for details if you're not familiar with this)
 quickselect :: Int -> [Int] -> Int
 quickselect k (x:xs)
-	| 1 + length xs <= k = error "k can not be greater than list length"
 	| len 			>= k = quickselect k small
 	| len + 1 		== k = x
 	| otherwise			 = quickselect (k-len-1) big
@@ -93,12 +103,12 @@ quickselect k (x:xs)
 
 -- What is the (average case and worst case) complexity of your code?
 -- The worst case is O(n^2), this can happen in a similar manner ot quicksort,
--- if bad pivots are selected, you must iterate through the array n times
--- and the size of the array only decreases by 1 each time.
+-- if bad pivots are selected, you must iterate through the list n times
+-- and the size of the list only decreases by 1 each time.
 -- (sum from i =1 to n of (n-i)) 
--- The average case complexity is O(n), you will divide the list log(n) total
+-- The average case complexity is O(n), you will divide the list lg(n) total
 -- times, and each time you must iterate through a list whose size is cut in
--- half after iteration (sum from i = 1 to log(n) of n/i), resulting in linear
+-- half after iteration (sum from i = 1 to lg(n) of n/i), resulting in linear
 -- time
 
 
