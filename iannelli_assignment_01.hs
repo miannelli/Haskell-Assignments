@@ -92,10 +92,16 @@ mergesort xs 	= merge (mergesort (take n xs)) (mergesort (drop n xs))
 -- Problem 7. (easy) Implement quickselect: return the kth smallest element of a list.
 -- (see CLRS, Section 9.2, for details if you're not familiar with this)
 quickselect :: Int -> [Int] -> Int
-quickselect k (x:xs)
-	| len 			>= k = quickselect k small
+quickselect k xs = 
+	if k > length xs
+		then error "List can not be empty"
+		else quickselect' k xs
+
+quickselect' :: Int -> [Int] -> Int
+quickselect' k (x:xs)
+	| len 			>= k = quickselect' k small
 	| len + 1 		== k = x
-	| otherwise			 = quickselect (k-len-1) big
+	| otherwise			 = quickselect' (k-len-1) big
 	where 
 		small 	= [ n | n <- xs, n <  x ]
 		big 	= [ n | n <- xs, n >= x ]
@@ -124,6 +130,8 @@ quickselect k (x:xs)
 -- know more about what is going on under the hood in order to properly analyze.
 -- For example, a list comprehension looks like a simple defintion as everything else,
 -- but it requires the computer to iterate through the list.
+-- It also seemed harder to handle errors from improper input since so much
+-- recursion is being used.
 
 --Debriefing (required!): --------------------------
 
