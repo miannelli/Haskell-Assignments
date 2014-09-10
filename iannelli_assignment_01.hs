@@ -77,9 +77,14 @@ merge (x:xs) (y:ys) = if x <= y
 mergesort :: [Int] -> [Int]
 mergesort [] 	= []
 mergesort [x] 	= [x]
-mergesort xs 	= merge (mergesort (take n xs)) (mergesort (drop n xs))
-  where
-  	n  = (div (length xs) 2)
+mergesort xs 	= merge (mergesort left) (mergesort right)
+	where (left, right) = split xs
+
+split :: [Int] -> ([Int], [Int])
+split [] 		= ([],[])
+split [x] 		= ([x],[])
+split (x:y:ys) 	= (x:left, y:right)
+	where (left, right) = split ys
 
 -- What is the (average case and worst case) complexity of your code?
 -- Both the worst case run time and the average is n*lg(n)
@@ -152,6 +157,4 @@ quickselect' k (x:xs)
 --This section is intended to help us calibrate the homework assignments. 
 --Your answers to this section will *not* affect your grade; however, skipping it
 --will certainly do.
-
-
 
