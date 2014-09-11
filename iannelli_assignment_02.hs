@@ -19,8 +19,21 @@
 --0. (easy-medium) 
 
 --   (a) Implement a tail recursive factorial function.
+factorial x = factorial' x 1
+
+factorial' 0 r = r
+factorial' x r = factorial' (x-1) (r*x)
 --   (b) Implement a recursive but linear-time fibonacci function using 
 --       the idea of "tail-recursion" as in the reverse function from the slides.
+fibonacci 1 = 1
+fibonacci 2 = 1
+fibonacci x  
+  | x <= 1 = error "Fibonacci undefined for values less than 1"   
+  | otherwise = fibonacci' (x-2) 1 1
+
+fibonacci' 0 value _ = value
+fibonacci' count v1 v2 = fibonacci' (count-1) (v1+v2) v1
+
 
 --1. Building a Lexer. Consider the following datatype of tokens:
 
@@ -44,65 +57,65 @@
 
 --Write a function mylex that takes a string as input and produces a list of tokens as output.
 --Your function should:
---* map consecutive sequences of digits to appropriate instances of the Number constructor
---* map the characters '+', '-', '*', '(', and ')' to Plus, Minus, Times, LParen, and RParen, resp.
---* ignore whitespace (' ')
---* fail (by raising the exception Bad) on all other characters (simply: error "Bad").
+-- * map consecutive sequences of digits to appropriate instances of the Number constructor
+-- * map the characters '+', '-', '*', '(', and ')' to Plus, Minus, Times, LParen, and RParen, resp.
+-- * ignore whitespace (' ')
+-- * fail (by raising the exception Bad) on all other characters (simply: error "Bad").
 
 --Examples:
 
---*Main> mylex " (12 +340) "
---[LParen,Number 12,Plus,Number 340,RParen]
+-- *Main> mylex " (12 +340) "
+-- [LParen,Number 12,Plus,Number 340,RParen]
 
---*Main> mylex "a"
---*** Exception: Bad
+-- *Main> mylex "a"
+-- *** Exception: Bad
 
---*Main> mylex []
---[]
+-- *Main> mylex []
+-- []
 
---*Main> mylex "((12+340)*  )"
---[LParen,LParen,Number 12,Plus,Number 340,RParen,Times,RParen]
+-- *Main> mylex "((12+340)*  )"
+-- [LParen,LParen,Number 12,Plus,Number 340,RParen,Times,RParen]
 
---2. Building a Parser. 
+-- 2. Building a Parser. 
 
---Here is a very simple grammar of fully parenthesized arithmetic expressions,
+-- Here is a very simple grammar of fully parenthesized arithmetic expressions,
      
 --     exp ::= number | (exp + exp) | (exp âˆ’ exp) | (exp âˆ— exp)
 
---This notation is called Backus-Naur Form (BNF) or context-free grammar (CFG).
---These concepts will be used throughout this course;
---read wikipedia if you're not familiar with them.
+-- This notation is called Backus-Naur Form (BNF) or context-free grammar (CFG).
+-- These concepts will be used throughout this course;
+-- read wikipedia if you're not familiar with them.
 
---Here is a datatype definition representing the corresponding type of abstract syntax trees (which we saw in class).
+-- Here is a datatype definition representing the corresponding type of abstract syntax trees (which we saw in class).
 
---data Ast = ANum Int
+-- data Ast = ANum Int
 --         | APlus Ast Ast
 --         | ATimes Ast Ast
 --         | AMinus Ast Ast  
 --           deriving (Show, Eq)
 
---Write a function parse that takes a list l of tokens and produces a pair (e,lâ€™),
---where e is a value of type ast (following the above grammar) and lâ€™ is a list of
---tokens representing the portion of l that was left over after parsing e. 
---Your function should raise the exception "Bad" if the token list does not correspond
---to a legal expression.
+-- Write a function parse that takes a list l of tokens and produces a pair (e,lâ€™),
+-- where e is a value of type ast (following the above grammar) and lâ€™ is a list of
+-- tokens representing the portion of l that was left over after parsing e. 
+-- Your function should raise the exception "Bad" if the token list does not correspond
+-- to a legal expression.
 
---Examples:
+-- Examples:
 
---*Main> parse [Number 5]
---(ANum 5,[])
+-- *Main> parse [Number 5]
+-- (ANum 5,[])
 
---*Main> parse [Number 5, Times, Number 6]
---(ANum 5,[Times,Number 6])
+-- *Main> parse [Number 5, Times, Number 6]
+-- (ANum 5,[Times,Number 6])
 
---*Main> parse [LParen, Number 3, Times, LParen, Number 5, Plus, Number 6, RParen, RParen, Times]
---(ATimes (ANum 3) (APlus (ANum 5) (ANum 6)),[Times])
+-- *Main> parse [LParen, Number 3, Times, LParen, Number 5, Plus, Number 6, RParen, RParen, Times]
+-- (ATimes (ANum 3) (APlus (ANum 5) (ANum 6)),[Times])
 
---*Main> parse [LParen, Number 5]
---*** Exception: Bad
+-- *Main> parse [LParen, Number 5]
+-- *** Exception: Bad
 
---Hint: if checking whether an expression is valid is too hard, you can ignore the exception part
---and assume the input is valid for the time-being.
+-- Hint: if checking whether an expression is valid is too hard, you can ignore the exception part
+-- and assume the input is valid for the time-being.
 
 
 --3. Put all of the pieces together: take the eval function given in lecture together 
@@ -121,13 +134,13 @@
 
 --Examples:
 
---*Main> calc "((1+2)*3)"
+-- *Main> calc "((1+2)*3)"
 --9
 
---*Main> calc "(1+2) 5"
---*** Exception: Bad
+-- *Main> calc "(1+2) 5"
+-- *** Exception: Bad
 
---*Main> calc "((2+1) * (11+8))"
+-- *Main> calc "((2+1) * (11+8))"
 --57
 
 
