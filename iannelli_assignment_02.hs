@@ -39,12 +39,12 @@ fibonacci' count v1 v2 = fibonacci' (count-1) (v1+v2) v1
 --1. Building a Lexer. Consider the following datatype of tokens:
 
 data Token = Number Int
-          | Plus
-          | Minus
-          | Times
-          | LParen
-          | RParen 
-            deriving (Show, Eq)
+           | Plus
+           | Minus
+           | Times
+           | LParen
+           | RParen 
+             deriving (Show, Eq)
 
 --Note that: 
 --a. "deriving (Show)" is like defining "toString" method in Java or "__str__" method in Python,
@@ -89,7 +89,8 @@ mylex (x:xs)
   | x == ' '          =                           (mylex xs)
   | otherwise         = error "Bad"
 
-lexMultiChar str [] = [(Number (read str :: Int))]
+lexMultiChar :: [Char] -> [Char] -> [Token]
+lexMultiChar str [] = [(Number (read (reverse str) :: Int))]
 lexMultiChar str (x:xs)
   | elem x ['0'..'9'] = lexMultiChar (x:str) xs
   | otherwise         = (Number (read (reverse str) :: Int)): (mylex (x:xs))
@@ -107,11 +108,11 @@ lexMultiChar str (x:xs)
 
 -- Here is a datatype definition representing the corresponding type of abstract syntax trees (which we saw in class).
 
--- data Ast = ANum Int
---         | APlus Ast Ast
---         | ATimes Ast Ast
---         | AMinus Ast Ast  
---           deriving (Show, Eq)
+data Ast = ANum Int
+         | APlus Ast Ast
+         | ATimes Ast Ast
+         | AMinus Ast Ast  
+           deriving (Show, Eq)
 
 -- Write a function parse that takes a list l of tokens and produces a pair (e,lâ€™),
 -- where e is a value of type ast (following the above grammar) and lâ€™ is a list of
@@ -135,6 +136,18 @@ lexMultiChar str (x:xs)
 
 -- Hint: if checking whether an expression is valid is too hard, you can ignore the exception part
 -- and assume the input is valid for the time-being.
+parse :: [Token] -> (Ast, [Token])
+parse ((Number y):xs) = (ANum y, xs)
+parse (LParen:xs)     = ((opToNode op) left right, remainder)
+  where (left, op:rest) = parse xs
+        (right, RParen:remainder) = parse rest
+
+opToNode :: Token -> Ast -> Ast -> Ast
+opToNode x 
+  | x == Times   = ATimes
+  | x == Plus   = APlus
+  | x == Minus  = AMinus
+  | otherwise   = error "Bad"
 
 
 --3. Put all of the pieces together: take the eval function given in lecture together 
@@ -145,11 +158,11 @@ lexMultiChar str (x:xs)
 
 --For your convenience I've copied the function eval here:
 
---eval :: Ast -> Int
---eval (ANum x) = x
---eval (ATimes x y) = (eval x) * (eval y)
---eval (APlus x y) = (eval x) + (eval y)
---eval (AMinus x y) = (eval x) - (eval y)
+eval :: Ast -> Int
+eval (ANum x) = x
+eval (ATimes x y) = (eval x) * (eval y)
+eval (APlus x y) = (eval x) + (eval y)
+eval (AMinus x y) = (eval x) - (eval y)
 
 --Examples:
 
@@ -162,14 +175,22 @@ lexMultiChar str (x:xs)
 -- *Main> calc "((2+1) * (11+8))"
 --57
 
+calc :: [Char] -> Int
+calc = eval . fst . parse . mylex
+
 
 --Debriefing (required!): --------------------------
 
 --1. Approximately how many hours did you spend on this assignment?
+--      Approximately 8-10 hours
 --2. Would you rate it as easy, moderate, or difficult?
+--      Difficult
 --3. Did you work on it mostly alone, or mostly with other people?
---4. How deeply do you feel you understand the material it covers (0%â€“100%)? 
+--      Alone
+--4. How deeply do you feel you understand the material it covers (0%â€“100%)?
+--      I am still a bit confused on the parser 
 --5. Any other comments?
+
 
 --This section is intended to help us calibrate the homework assignments. 
 --Your answers to this section will *not* affect your grade; however, skipping it
