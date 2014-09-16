@@ -15,6 +15,7 @@
 --these concepts, read "lexical analysis" from wikipedia) for simple arithmetic
 --expressions. Familiarity with these concepts and techniques are extremely 
 --important for the rest of this course and your understanding of PL in general.
+import Data.Char
 
 --0. (easy-medium) 
 
@@ -37,13 +38,13 @@ fibonacci' count v1 v2 = fibonacci' (count-1) (v1+v2) v1
 
 --1. Building a Lexer. Consider the following datatype of tokens:
 
---   data Token = Number Int
---              | Plus
---              | Minus
---              | Times
---              | LParen
---              | RParen 
---                deriving (Show, Eq)
+data Token = Number Int
+          | Plus
+          | Minus
+          | Times
+          | LParen
+          | RParen 
+            deriving (Show, Eq)
 
 --Note that: 
 --a. "deriving (Show)" is like defining "toString" method in Java or "__str__" method in Python,
@@ -75,6 +76,24 @@ fibonacci' count v1 v2 = fibonacci' (count-1) (v1+v2) v1
 
 -- *Main> mylex "((12+340)*  )"
 -- [LParen,LParen,Number 12,Plus,Number 340,RParen,Times,RParen]
+
+mylex :: [Char] -> [Token]
+mylex [] = []
+mylex (x:xs)
+  | elem x ['0'..'9'] = lexMultiChar [x] xs
+  | x == '+'          = Plus                    : (mylex xs)
+  | x == '-'          = Minus                   : (mylex xs)
+  | x == '*'          = Times                   : (mylex xs)
+  | x == '('          = LParen                  : (mylex xs)
+  | x == ')'          = RParen                  : (mylex xs)
+  | x == ' '          =                           (mylex xs)
+  | otherwise         = error "Bad"
+
+lexMultiChar str [] = [(Number (read str :: Int))]
+lexMultiChar str (x:xs)
+  | elem x ['0'..'9'] = lexMultiChar (x:str) xs
+  | otherwise         = (Number (read (reverse str) :: Int)): (mylex (x:xs))
+
 
 -- 2. Building a Parser. 
 
