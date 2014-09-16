@@ -1,6 +1,6 @@
+--Michael Iannelli
 --Programming Languages, Fall 2013
 --HW2 - More Haskell
---Due electronically on Blackboard on Monday Sep 16, 11:59pm.
 
 --Expected Amount of Work for an average student: 6-8 hours.
 
