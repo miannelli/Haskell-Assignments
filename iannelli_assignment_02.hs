@@ -144,7 +144,7 @@ parse (LParen:xs)     = ((opToNode op) left right, remainder)
 
 opToNode :: Token -> Ast -> Ast -> Ast
 opToNode x 
-  | x == Times   = ATimes
+  | x == Times  = ATimes
   | x == Plus   = APlus
   | x == Minus  = AMinus
   | otherwise   = error "Bad"

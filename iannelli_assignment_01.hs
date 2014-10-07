@@ -161,3 +161,7 @@ quickselect' k (x:xs)
 -- our answers to this section will *not* affect your grade; however, skipping
 -- it will certainly do.
 
+mergesorted xs [] = xs
+mergesorted [] ys = ys
+mergesorted (x:xs) (y:ys) = if x<=y then x:(mergesorted xs (y:ys)) 
+ else y:(mergesorted (x:xs) ys)
